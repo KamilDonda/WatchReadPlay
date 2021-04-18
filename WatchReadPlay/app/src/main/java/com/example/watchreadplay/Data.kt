@@ -1,5 +1,7 @@
 package com.example.watchreadplay
 
+import android.graphics.drawable.Drawable
+
 data class Data(
     val type: String,
     val title: String,
@@ -7,4 +9,5 @@ data class Data(
     val release_date: Int,
     val author: String,
     val completion_date: String,
-    var isClicked: Boolean)
+    var isClicked: Boolean,
+    val icon: Drawable)

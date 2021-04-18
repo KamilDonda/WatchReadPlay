@@ -28,7 +28,7 @@
                 android:id="@+id/type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Movie"
+                android:layout_marginStart="5dp"
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="@+id/icon" />
 
@@ -36,7 +36,6 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Władca Pierścieni: Powrót Króla"
                 android:textStyle="bold"
                 android:textSize="26sp"
                 app:layout_constraintStart_toStartOf="@+id/icon"
@@ -60,7 +59,7 @@
                     android:id="@+id/original_title_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Original Title"
+                    android:text="@string/original_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,7 +67,6 @@
                     android:id="@+id/original_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="The Lord of the Rings: The Return of the King"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/original_title_desc"
                     app:layout_constraintTop_toBottomOf="@+id/original_title_desc" />
@@ -84,7 +82,7 @@
                     android:id="@+id/release_date_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Release date"
+                    android:text="@string/release_date"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,7 +90,6 @@
                     android:id="@+id/release_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2003"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/release_date_desc"
                     app:layout_constraintTop_toBottomOf="@+id/release_date_desc" />
@@ -108,7 +105,7 @@
                     android:id="@+id/author_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Director"
+                    android:text="@string/director"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -116,7 +113,6 @@
                     android:id="@+id/author"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Peter Jackson"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/author_desc"
                     app:layout_constraintTop_toBottomOf="@+id/author_desc" />
@@ -132,7 +128,7 @@
                     android:id="@+id/completion_date_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Completion date"
+                    android:text="@string/completion_date"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -140,7 +136,6 @@
                     android:id="@+id/completion_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="20/04/2021 16:30"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/completion_date_desc"
                     app:layout_constraintTop_toBottomOf="@+id/completion_date_desc" />

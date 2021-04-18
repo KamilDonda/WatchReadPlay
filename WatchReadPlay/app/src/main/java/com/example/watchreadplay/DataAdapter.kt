@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.android.synthetic.main.row.view.*
 
 class DataAdapter(val list: List<Data>) : RecyclerView.Adapter<DataAdapter.Holder>() {
 
@@ -33,6 +34,15 @@ class DataAdapter(val list: List<Data>) : RecyclerView.Adapter<DataAdapter.Holde
         val completion_date = holder.itemView.findViewById<MaterialTextView>(R.id.completion_date)
 
         val item = list[position]
+
+        icon.setImageDrawable(item.icon)
+        print(icon)
+        type.text = item.type
+        title.text = item.title
+        original_title.text = item.original_title
+        release_date.text = item.release_date.toString()
+        author.text = item.author
+        completion_date.text = item.completion_date
 
         description.visibility = if (item.isClicked) View.VISIBLE else View.GONE
 
