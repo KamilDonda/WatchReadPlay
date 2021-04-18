@@ -1,6 +1,11 @@
 <resources>
-    <string name="app_name">Watch Read Play</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">WatchReadPlay</string>
+    <string name="finished">Finished</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="all">All</string>
+
+    <string name="movies">Movies</string>
+    <string name="series">Series</string>
+    <string name="books">Books</string>
+    <string name="games">Games</string>
 </resources>

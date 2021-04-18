@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.MainFragment">
+
+    <RadioGroup
+        android:id="@+id/radio_group_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="clip_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/top_all"
+            style="@style/RadioButtonStyle.Top"
+            android:checked="true"
+            android:text="@string/all"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/top_movies"
+            style="@style/RadioButtonStyle.Top"
+            android:text="@string/movies"
+            app:layout_constraintEnd_toStartOf="@+id/radio_all"
+            app:layout_constraintStart_toEndOf="@+id/radio_finished"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/top_series"
+            style="@style/RadioButtonStyle.Top"
+            android:text="@string/series"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/top_books"
+            style="@style/RadioButtonStyle.Top"
+            android:text="@string/books"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/top_games"
+            style="@style/RadioButtonStyle.Top"
+            android:text="@string/games"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radio_group_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="clip_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RadioButton
+            android:id="@+id/bottom_finished"
+            style="@style/RadioButtonStyle"
+            android:checked="true"
+            android:text="@string/finished"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/bottom_wishlist"
+            style="@style/RadioButtonStyle"
+            android:text="@string/wishlist"
+            app:layout_constraintEnd_toStartOf="@+id/radio_all"
+            app:layout_constraintStart_toEndOf="@+id/radio_finished"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioButton
+            android:id="@+id/bottom_all"
+            style="@style/RadioButtonStyle"
+            android:text="@string/all"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
