@@ -10,4 +10,6 @@
 
     <color name="selected_color">@color/purple_500</color>
     <color name="unselected_color">@color/black</color>
+
+    <color name="card_color">#E3F2FD</color>
 </resources>
