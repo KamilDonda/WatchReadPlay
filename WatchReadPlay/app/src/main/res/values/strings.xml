@@ -3,4 +3,9 @@
     <string name="finished">Finished</string>
     <string name="wishlist">Wishlist</string>
     <string name="all">All</string>
+
+    <string name="movies">Movies</string>
+    <string name="series">Series</string>
+    <string name="books">Books</string>
+    <string name="games">Games</string>
 </resources>
