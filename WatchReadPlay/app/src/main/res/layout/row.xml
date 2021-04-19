@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="@dimen/title_size"
+                android:textColor="@color/text_color"
                 app:layout_constraintStart_toStartOf="@+id/icon"
                 app:layout_constraintTop_toBottomOf="@+id/type" />
 
