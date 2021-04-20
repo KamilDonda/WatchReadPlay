@@ -10,11 +10,14 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
+import com.example.watchreadplay.MainActivity
 import com.example.watchreadplay.R
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.main_fragment.*
 
 
@@ -25,8 +28,12 @@ class MainFragment : Fragment() {
     private lateinit var myLayoutManager: LinearLayoutManager
     private lateinit var recyclerView: RecyclerView
 
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
+
+        auth = FirebaseAuth.getInstance()
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         myLayoutManager = LinearLayoutManager(context)
@@ -79,9 +86,18 @@ class MainFragment : Fragment() {
             val rb = view.findViewById(checkedId) as RadioButton
         }
 
+        add_button.setOnClickListener {
+            signOut()
+        }
+
         recyclerView = recycler_view.apply {
             layoutManager = myLayoutManager
             adapter = myAdapter
         }
+    }
+
+    private fun signOut() {
+        auth.signOut()
+        findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
     }
 }
