@@ -1,4 +1,4 @@
-package com.example.watchreadplay.ui.main
+package com.example.watchreadplay.ui.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -80,7 +80,9 @@ class LoginFragment : Fragment() {
 
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(signInIntent,
+            RC_SIGN_IN
+        )
     }
 
     private fun updateUI(user: FirebaseUser?) {

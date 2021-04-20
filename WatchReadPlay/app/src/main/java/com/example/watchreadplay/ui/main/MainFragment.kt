@@ -20,10 +20,6 @@ import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
     private lateinit var viewModel: MainViewModel
     private lateinit var myAdapter: DataAdapter
     private lateinit var myLayoutManager: LinearLayoutManager
