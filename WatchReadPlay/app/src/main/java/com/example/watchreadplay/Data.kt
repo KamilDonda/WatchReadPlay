@@ -10,4 +10,5 @@ data class Data(
     val author: String = "",
     val completion_date: String = "-",
     var isClicked: Boolean = false,
+    var isLongClicked: Boolean = false,
     var icon: Drawable? = null)

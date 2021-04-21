@@ -2,8 +2,9 @@
 <resources>
     <dimen name="image_size">20dp</dimen>
     <dimen name="title_size">26sp</dimen>
-    <dimen name="top_margin_row">10dp</dimen>
+    <dimen name="top_margin_row">14dp</dimen>
     <dimen name="card_margin">10dp</dimen>
     <dimen name="card_padding">10dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="et_size">14sp</dimen>
 </resources>

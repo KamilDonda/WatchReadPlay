@@ -11,8 +11,10 @@
 
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
-    <string name="director">Director</string>
+    <string name="author">Author</string>
     <string name="completion_date">Completion date</string>
 
     <string name="add">Add</string>
+    <string name="edit_date">Edit date</string>
+    <string name="save">Save</string>
 </resources>

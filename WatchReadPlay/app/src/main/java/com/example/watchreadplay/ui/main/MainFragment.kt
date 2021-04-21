@@ -56,7 +56,7 @@ class MainFragment : Fragment() {
         }
 
         add_button.setOnClickListener {
-            addData()
+            signOut()
         }
 
         recycler_view.layoutManager = LinearLayoutManager(context)
