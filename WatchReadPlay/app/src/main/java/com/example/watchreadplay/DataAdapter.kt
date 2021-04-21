@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.row.view.*
 
-class DataAdapter(val list: List<Data>) : RecyclerView.Adapter<DataAdapter.Holder>() {
+class DataAdapter(val list: ArrayList<Data>) : RecyclerView.Adapter<DataAdapter.Holder>() {
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view)
 
