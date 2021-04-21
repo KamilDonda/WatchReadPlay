@@ -3,6 +3,7 @@ package com.example.watchreadplay.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.RadioButton
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -34,8 +36,10 @@ class MainFragment : Fragment() {
     private lateinit var ref: DatabaseReference
     private lateinit var list: ArrayList<Data>
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         val firebase = FirebaseDatabase.getInstance(getString(R.string.firebase_database_url))
         ref = firebase.getReference("ArrayData")
@@ -47,7 +51,19 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        radio_group_bottom.setOnCheckedChangeListener { group, checkedId ->
+        radio_group_top.setOnCheckedChangeListener { _, checkedId ->
+            val rb = view.findViewById(checkedId) as RadioButton
+
+            val temp = ArrayList<Data>()
+            list.forEach {
+                if (checkType(it.type!!, rb.text.toString()) || rb.text == "All")
+                    temp.add(it)
+            }
+
+            setupAdapter(temp)
+        }
+
+        radio_group_bottom.setOnCheckedChangeListener { _, checkedId ->
             val rb = view.findViewById(checkedId) as RadioButton
         }
 
@@ -63,10 +79,11 @@ class MainFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 list = ArrayList()
 
-                val user = auth.currentUser.uid
+                val user = auth.currentUser!!.uid
 
                 for (row in snapshot.child(user).children) {
                     val newRow = row.getValue(Data::class.java)
+                    newRow?.icon = setIcon(newRow?.type)
                     list.add(newRow!!)
                 }
                 setupAdapter(list)
@@ -80,7 +97,8 @@ class MainFragment : Fragment() {
     }
 
     private fun addData() {
-        val input = Data("Serie",
+        val input = Data(
+            "Serie",
             "The Falcon and the Winter Soldier",
             "The Falcon and the Winter Soldier",
             2021,
@@ -94,5 +112,26 @@ class MainFragment : Fragment() {
 
     private fun setupAdapter(list: ArrayList<Data>) {
         recycler_view.adapter = DataAdapter(list)
+    }
+
+    private fun checkType(type: String, text_radio: String): Boolean {
+        return when (text_radio) {
+            getString(R.string.movies) -> "Movie"
+            getString(R.string.series) -> "Serie"
+            getString(R.string.books) -> "Book"
+            getString(R.string.games) -> "Game"
+            else -> ""
+        } == type
+    }
+
+    private fun setIcon(type: String?): Drawable? {
+        Log.v("XD", type.toString())
+        return when (type) {
+            "Movie" -> getDrawable(requireContext(), R.drawable.ic_movie)
+            "Serie" -> getDrawable(requireContext(), R.drawable.ic_serie)
+            "Book" -> getDrawable(requireContext(), R.drawable.ic_book)
+            "Game" -> getDrawable(requireContext(), R.drawable.ic_game)
+            else -> null
+        }
     }
 }
