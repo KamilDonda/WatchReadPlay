@@ -1,34 +1,22 @@
 package com.example.watchreadplay.ui.main
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
-import com.example.watchreadplay.MainActivity
 import com.example.watchreadplay.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.main_fragment.*
-import java.util.*
-import kotlin.collections.ArrayList
-
 
 class MainFragment : Fragment() {
 
@@ -125,7 +113,6 @@ class MainFragment : Fragment() {
     }
 
     private fun setIcon(type: String?): Drawable? {
-        Log.v("XD", type.toString())
         return when (type) {
             "Movie" -> getDrawable(requireContext(), R.drawable.ic_movie)
             "Serie" -> getDrawable(requireContext(), R.drawable.ic_serie)

@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
-import kotlinx.android.synthetic.main.row.view.*
 
 class DataAdapter(val list: ArrayList<Data>) : RecyclerView.Adapter<DataAdapter.Holder>() {
 
