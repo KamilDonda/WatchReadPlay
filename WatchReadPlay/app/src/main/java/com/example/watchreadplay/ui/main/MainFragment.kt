@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,12 @@ import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.MainActivity
 import com.example.watchreadplay.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.util.*
 
 
 class MainFragment : Fragment() {
@@ -29,13 +35,16 @@ class MainFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var ref: DatabaseReference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
 
+        val firebase = FirebaseDatabase.getInstance(getString(R.string.firebase_database_url))
+        ref = firebase.getReference("ArrayData")
         auth = FirebaseAuth.getInstance()
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+//        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         myLayoutManager = LinearLayoutManager(context)
 
         val list = listOf(
@@ -87,7 +96,7 @@ class MainFragment : Fragment() {
         }
 
         add_button.setOnClickListener {
-            signOut()
+            addData()
         }
 
         recyclerView = recycler_view.apply {
@@ -99,5 +108,18 @@ class MainFragment : Fragment() {
     private fun signOut() {
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+    }
+
+    private fun addData() {
+        val input = Data("Movie",
+            "Władca Pierścieni: Powrót Króla",
+            "The Lord of the Rings: The Return of the King",
+            2003,
+            "Peter Jackson",
+            "15/04/2021 16:30",
+            false
+        )
+
+        ref.child(auth.currentUser.uid).child("${Date().time}").setValue(input)
     }
 }

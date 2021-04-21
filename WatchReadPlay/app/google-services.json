@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "867683378358",
+    "firebase_url": "https://watchreadplay-73bbc-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "watchreadplay-73bbc",
     "storage_bucket": "watchreadplay-73bbc.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "867683378358-6fuskiqsknoaf2gj840u1u0t8oe5pr8d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.watchreadplay",
+            "certificate_hash": "c7b7fa30a2cdfd7e8ea049c950afc13b4a9ba66b"
+          }
+        },
         {
           "client_id": "867683378358-r5e7f2tfam4gq9qhbe7si19gkugkrplc.apps.googleusercontent.com",
           "client_type": 3

@@ -10,4 +10,4 @@ data class Data(
     val author: String,
     val completion_date: String,
     var isClicked: Boolean,
-    val icon: Drawable)
+    val icon: Drawable? = null)
