@@ -16,6 +16,8 @@ import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
@@ -29,6 +31,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
+        Firebase.database.setPersistenceEnabled(true)
         val firebase = FirebaseDatabase.getInstance(getString(R.string.firebase_database_url))
         ref = firebase.getReference("ArrayData")
         auth = FirebaseAuth.getInstance()
