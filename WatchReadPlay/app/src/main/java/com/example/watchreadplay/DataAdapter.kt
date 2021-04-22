@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -38,6 +39,7 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
 
         val root = holder.itemView.findViewById<CardView>(R.id.root)
         val description = holder.itemView.findViewById<LinearLayout>(R.id.description)
+        val menu = holder.itemView.findViewById<ConstraintLayout>(R.id.menu)
 
         val icon = holder.itemView.findViewById<ImageView>(R.id.icon)
         val type = holder.itemView.findViewById<MaterialTextView>(R.id.type)
@@ -80,7 +82,7 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
 
         description.visibility = if (item.isClicked) View.VISIBLE else View.GONE
         date_picker_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
-        save_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
+        menu.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
 
         editTextList.zip(textViewList) { et, tv ->
             et.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
