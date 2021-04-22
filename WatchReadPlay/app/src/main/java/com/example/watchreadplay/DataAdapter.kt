@@ -3,6 +3,7 @@ package com.example.watchreadplay
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +24,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.coroutineContext
 
-class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val auth: FirebaseAuth) :
+class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val auth: FirebaseAuth, val context: Context) :
     RecyclerView.Adapter<DataAdapter.Holder>() {
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view)
@@ -63,6 +65,8 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
         val et_author = holder.itemView.findViewById<TextInputEditText>(R.id.author_et)
         val date_picker_button = holder.itemView.findViewById<Button>(R.id.date_picker_button)
         val save_button = holder.itemView.findViewById<Button>(R.id.save_button)
+        val cancel_button = holder.itemView.findViewById<Button>(R.id.cancel_button)
+        val delete_button = holder.itemView.findViewById<Button>(R.id.delete_button)
         val editTextList = listOf(
             et_title,
             et_original_title,
@@ -138,7 +142,8 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
             val _author = et_author.text.toString()
             val _completion_date = completion_date.text.toString()
 
-            val newItem = Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
+            val newItem =
+                Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
             ref.child(auth.currentUser.uid).child(_id).setValue(newItem)
         }
 
@@ -146,6 +151,24 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
             updateItem()
             item.isLongClicked = false
             notifyItemChanged(position)
+        }
+
+        cancel_button.setOnClickListener {
+            item.isLongClicked = false
+            notifyItemChanged(position)
+        }
+
+        delete_button.setOnClickListener {
+            MaterialAlertDialogBuilder(context)
+                .setTitle(context.getString(R.string.title))
+                .setMessage(context.getString(R.string.supporting_text))
+                .setNeutralButton(context.getString(R.string.cancel)) { _, _ -> }
+                .setPositiveButton(context.getString(R.string.accept)) { _, _ ->
+                    ref.child(auth.currentUser.uid).child(item.id).removeValue()
+                    item.isLongClicked = false
+                    notifyItemChanged(position)
+                }
+                .show()
         }
     }
 }

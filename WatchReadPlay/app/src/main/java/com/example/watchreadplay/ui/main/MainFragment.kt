@@ -102,7 +102,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setupAdapter(list: ArrayList<Data>) {
-        recycler_view.adapter = DataAdapter(list, ref, auth)
+        recycler_view.adapter = DataAdapter(list, ref, auth, requireContext())
     }
 
     private fun checkType(type: String, text_radio: String): Boolean {
