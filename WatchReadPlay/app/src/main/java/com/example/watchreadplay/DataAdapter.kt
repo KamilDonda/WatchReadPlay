@@ -3,6 +3,7 @@ package com.example.watchreadplay
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.coroutineContext
 
-class DataAdapter(val list: ArrayList<Data>) :
+class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val auth: FirebaseAuth) :
     RecyclerView.Adapter<DataAdapter.Holder>() {
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view)
@@ -101,11 +104,6 @@ class DataAdapter(val list: ArrayList<Data>) :
             true
         }
 
-        save_button.setOnClickListener {
-            item.isLongClicked = false
-            notifyItemChanged(position)
-        }
-
         val datePicker =
             MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select date")
@@ -127,6 +125,25 @@ class DataAdapter(val list: ArrayList<Data>) :
 
         datePicker.addOnPositiveButtonClickListener {
             completion_date.text = convertLongToTime(it)
+        }
+
+        fun updateItem() {
+            val _id = item.id
+            val _type = type.text.toString()
+            val _title = et_title.text.toString()
+            val _original_title = et_original_title.text.toString()
+            val _release_date = et_release_date.text.toString().toInt()
+            val _author = et_author.text.toString()
+            val _completion_date = completion_date.text.toString()
+
+            val newItem = Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
+            ref.child(auth.currentUser.uid).child(_id).setValue(newItem)
+        }
+
+        save_button.setOnClickListener {
+            updateItem()
+            item.isLongClicked = false
+            notifyItemChanged(position)
         }
     }
 }

@@ -19,6 +19,8 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainFragment : Fragment() {
 
@@ -60,6 +62,7 @@ class MainFragment : Fragment() {
 
         add_button.setOnClickListener {
             signOut()
+//            addData()
         }
 
         recycler_view.layoutManager = LinearLayoutManager(context)
@@ -89,6 +92,7 @@ class MainFragment : Fragment() {
 
     private fun addData() {
         val input = Data(
+            "${Date().time}",
             "Serie",
             "The Falcon and the Winter Soldier",
             "The Falcon and the Winter Soldier",
@@ -98,11 +102,11 @@ class MainFragment : Fragment() {
             false
         )
 
-//        ref.child(auth.currentUser.uid).child("${Date().time}").setValue(input)
+        ref.child(auth.currentUser.uid).child(input.id).setValue(input)
     }
 
     private fun setupAdapter(list: ArrayList<Data>) {
-        recycler_view.adapter = DataAdapter(list)
+        recycler_view.adapter = DataAdapter(list, ref, auth)
     }
 
     private fun checkType(type: String, text_radio: String): Boolean {
