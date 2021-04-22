@@ -2,7 +2,6 @@ package com.example.watchreadplay.ui.main
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,6 @@ import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.main_fragment.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,7 +30,6 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        Firebase.database.setPersistenceEnabled(true)
         val firebase = FirebaseDatabase.getInstance(getString(R.string.firebase_database_url))
         ref = firebase.getReference("ArrayData")
         auth = FirebaseAuth.getInstance()
