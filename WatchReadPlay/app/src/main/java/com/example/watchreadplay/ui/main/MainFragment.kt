@@ -45,15 +45,21 @@ class MainFragment : Fragment() {
 
             val temp = ArrayList<Data>()
             list.forEach {
-                if (checkType(it.type!!, rb.text.toString()) || rb.text == "All")
+                if (rb.text == "All" || checkType(it.type!!, rb.text.toString()))
                     temp.add(it)
             }
-
             setupAdapter(temp)
         }
 
         radio_group_bottom.setOnCheckedChangeListener { _, checkedId ->
             val rb = view.findViewById(checkedId) as RadioButton
+
+            val temp = ArrayList<Data>()
+            list.forEach {
+                if (rb.text == "All" || checkStatus(it, rb.text.toString()))
+                    temp.add(it)
+            }
+            setupAdapter(temp)
         }
 
         add_button.setOnClickListener {
@@ -76,7 +82,7 @@ class MainFragment : Fragment() {
                     newRow?.icon = setIcon(newRow?.type)
                     list.add(newRow!!)
                 }
-                setupAdapter(list)
+                preSetupAdapter(list)
             }
         })
     }
@@ -105,6 +111,15 @@ class MainFragment : Fragment() {
         recycler_view.adapter = DataAdapter(list, ref, auth, requireContext())
     }
 
+    private fun preSetupAdapter(list: ArrayList<Data>) {
+        val temp = ArrayList<Data>()
+        list.forEach {
+            if (checkStatus(it, getString(R.string.finished)))
+                temp.add(it)
+        }
+        setupAdapter(temp)
+    }
+
     private fun checkType(type: String, text_radio: String): Boolean {
         return when (text_radio) {
             getString(R.string.movies) -> "Movie"
@@ -113,6 +128,11 @@ class MainFragment : Fragment() {
             getString(R.string.games) -> "Game"
             else -> ""
         } == type
+    }
+
+    private fun checkStatus(item: Data, text_radio: String): Boolean {
+        return (item.completion_date != "-" && text_radio == getString(R.string.finished) ||
+                item.completion_date == "-" && text_radio == getString(R.string.wishlist))
     }
 
     private fun setIcon(type: String?): Drawable? {

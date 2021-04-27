@@ -63,6 +63,7 @@ class DataAdapter(
         val release_date = holder.itemView.findViewById<MaterialTextView>(R.id.release_date)
         val author = holder.itemView.findViewById<MaterialTextView>(R.id.author)
         val completion_date = holder.itemView.findViewById<MaterialTextView>(R.id.completion_date)
+        val checkbox = holder.itemView.findViewById<CheckBox>(R.id.checkbox)
         val textViewList = listOf(
             title,
             original_title,
@@ -97,11 +98,13 @@ class DataAdapter(
         release_date.text = item.release_date.toString()
         author.text = item.author
         completion_date.text = item.completion_date
+        checkbox.isChecked = (item.completion_date != "-")
 
         description.visibility = if (item.isClicked) View.VISIBLE else View.GONE
         date_picker_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
         menu.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
         change_type_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
+        checkbox.visibility = if (item.isLongClicked) View.GONE else View.VISIBLE
 
         editTextList.zip(textViewList) { et, tv ->
             et.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
@@ -160,6 +163,20 @@ class DataAdapter(
             val newItem =
                 Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
             ref.child(auth.currentUser.uid).child(_id).setValue(newItem)
+        }
+
+        fun updateItem(bool: Boolean) {
+            val date =
+                if (bool) SimpleDateFormat("dd/MM/yyyy").format(Date())
+                else "-"
+
+            completion_date.text = date
+            val newItem = item.copy(completion_date = date)
+            ref.child(auth.currentUser.uid).child(newItem.id).setValue(newItem)
+        }
+
+        checkbox.setOnClickListener {
+            updateItem(checkbox.isChecked)
         }
 
         save_button.setOnClickListener {
