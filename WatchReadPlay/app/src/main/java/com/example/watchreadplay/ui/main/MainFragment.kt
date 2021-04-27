@@ -48,7 +48,6 @@ class MainFragment : Fragment() {
                 if (checkType(it.type!!, rb.text.toString()) || rb.text == "All")
                     temp.add(it)
             }
-
             setupAdapter(temp)
         }
 
