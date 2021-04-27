@@ -27,7 +27,9 @@
     <string name="delete">Delete</string>
     <string name="change_type">Change type</string>
 
-    <string name="title">Delete this item?</string>
+    <string name="title_delete">Delete this item?</string>
+    <string name="title_logout">Logging out</string>
     <string name="accept">Accept</string>
-    <string name="supporting_text">Are you sure you want to remove this item? Item once deleted cannot be restored!</string>
+    <string name="supporting_text_delete">Are you sure you want to remove this item? Item once deleted cannot be restored!</string>
+    <string name="supporting_text_logout">Are you sure you want to logout?</string>
 </resources>

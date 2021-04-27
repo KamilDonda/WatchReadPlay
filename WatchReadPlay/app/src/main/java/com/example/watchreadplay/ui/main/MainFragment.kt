@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -67,7 +68,14 @@ class MainFragment : Fragment() {
         }
 
         logout_button.setOnClickListener {
-            signOut()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(requireContext().getString(R.string.title_logout))
+                .setMessage(requireContext().getString(R.string.supporting_text_logout))
+                .setNeutralButton(requireContext().getString(R.string.cancel)) { _, _ -> }
+                .setPositiveButton(requireContext().getString(R.string.accept)) { _, _ ->
+                    signOut()
+                }
+                .show()
         }
 
         recycler_view.layoutManager = LinearLayoutManager(context)
