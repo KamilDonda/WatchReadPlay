@@ -31,6 +31,21 @@
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="@+id/icon" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/change_type_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:insetBottom="0dp"
+                android:insetTop="0dp"
+                android:paddingTop="0dp"
+                android:gravity="top"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:text="@string/change_type"
+                android:textColor="@color/fab_color"
+                app:layout_constraintStart_toEndOf="@+id/type"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
@@ -186,7 +201,6 @@
 
                 <Button
                     android:id="@+id/save_button"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/save"

@@ -9,6 +9,11 @@
     <string name="books">Books</string>
     <string name="games">Games</string>
 
+    <string name="movie">Movie</string>
+    <string name="serie">Serie</string>
+    <string name="book">Book</string>
+    <string name="game">Game</string>
+
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
     <string name="author">Author</string>
@@ -19,6 +24,7 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="change_type">Change type</string>
 
     <string name="title">Delete this item?</string>
     <string name="accept">Accept</string>

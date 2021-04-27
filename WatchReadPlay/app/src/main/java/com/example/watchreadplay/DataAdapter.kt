@@ -4,27 +4,40 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
+import android.graphics.drawable.InsetDrawable
+import android.os.Build
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.MenuRes
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
+import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.coroutineContext
 
-class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val auth: FirebaseAuth, val context: Context) :
+class DataAdapter(
+    private val list: ArrayList<Data>,
+    private val ref: DatabaseReference,
+    private val auth: FirebaseAuth,
+    private val context: Context
+) :
     RecyclerView.Adapter<DataAdapter.Holder>() {
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view)
@@ -67,6 +80,7 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
         val save_button = holder.itemView.findViewById<Button>(R.id.save_button)
         val cancel_button = holder.itemView.findViewById<Button>(R.id.cancel_button)
         val delete_button = holder.itemView.findViewById<Button>(R.id.delete_button)
+        val change_type_button = holder.itemView.findViewById<Button>(R.id.change_type_button)
         val editTextList = listOf(
             et_title,
             et_original_title,
@@ -87,6 +101,7 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
         description.visibility = if (item.isClicked) View.VISIBLE else View.GONE
         date_picker_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
         menu.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
+        change_type_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
 
         editTextList.zip(textViewList) { et, tv ->
             et.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
@@ -169,6 +184,51 @@ class DataAdapter(val list: ArrayList<Data>, val ref: DatabaseReference, val aut
                     notifyItemChanged(position)
                 }
                 .show()
+        }
+
+        // method to show popup menu
+        fun showPopupMenu(v: View) {
+            val popup = PopupMenu(context, v)
+
+            popup.apply {
+                // inflate the popup menu
+                menuInflater.inflate(R.menu.popup_menu, popup.menu)
+                // popup menu item click listener
+                setOnMenuItemClickListener {
+                    icon.setImageDrawable(it.icon)
+                    type.text = it.title
+                    false
+                }
+            }
+            // show icons on popup menu
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                popup.setForceShowIcon(true)
+            } else {
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if ("mPopup" == field.name) {
+                            field.isAccessible = true
+                            val menuPopupHelper = field[popup]
+                            val classPopupHelper =
+                                Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceIcons: Method = classPopupHelper.getMethod(
+                                "setForceShowIcon",
+                                Boolean::class.javaPrimitiveType
+                            )
+                            setForceIcons.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            popup.show()
+        }
+
+        change_type_button.setOnClickListener {
+            showPopupMenu(it)
         }
     }
 }
