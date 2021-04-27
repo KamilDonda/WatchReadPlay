@@ -3,22 +3,41 @@ package com.example.watchreadplay
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.graphics.drawable.InsetDrawable
+import android.os.Build
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.MenuRes
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.coroutines.coroutineContext
 
-class DataAdapter(val list: ArrayList<Data>) :
+class DataAdapter(
+    private val list: ArrayList<Data>,
+    private val ref: DatabaseReference,
+    private val auth: FirebaseAuth,
+    private val context: Context
+) :
     RecyclerView.Adapter<DataAdapter.Holder>() {
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view)
@@ -35,6 +54,7 @@ class DataAdapter(val list: ArrayList<Data>) :
 
         val root = holder.itemView.findViewById<CardView>(R.id.root)
         val description = holder.itemView.findViewById<LinearLayout>(R.id.description)
+        val menu = holder.itemView.findViewById<ConstraintLayout>(R.id.menu)
 
         val icon = holder.itemView.findViewById<ImageView>(R.id.icon)
         val type = holder.itemView.findViewById<MaterialTextView>(R.id.type)
@@ -58,6 +78,9 @@ class DataAdapter(val list: ArrayList<Data>) :
         val et_author = holder.itemView.findViewById<TextInputEditText>(R.id.author_et)
         val date_picker_button = holder.itemView.findViewById<Button>(R.id.date_picker_button)
         val save_button = holder.itemView.findViewById<Button>(R.id.save_button)
+        val cancel_button = holder.itemView.findViewById<Button>(R.id.cancel_button)
+        val delete_button = holder.itemView.findViewById<Button>(R.id.delete_button)
+        val change_type_button = holder.itemView.findViewById<Button>(R.id.change_type_button)
         val editTextList = listOf(
             et_title,
             et_original_title,
@@ -77,7 +100,8 @@ class DataAdapter(val list: ArrayList<Data>) :
 
         description.visibility = if (item.isClicked) View.VISIBLE else View.GONE
         date_picker_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
-        save_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
+        menu.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
+        change_type_button.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
 
         editTextList.zip(textViewList) { et, tv ->
             et.visibility = if (item.isLongClicked) View.VISIBLE else View.GONE
@@ -101,11 +125,6 @@ class DataAdapter(val list: ArrayList<Data>) :
             true
         }
 
-        save_button.setOnClickListener {
-            item.isLongClicked = false
-            notifyItemChanged(position)
-        }
-
         val datePicker =
             MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select date")
@@ -127,6 +146,89 @@ class DataAdapter(val list: ArrayList<Data>) :
 
         datePicker.addOnPositiveButtonClickListener {
             completion_date.text = convertLongToTime(it)
+        }
+
+        fun updateItem() {
+            val _id = item.id
+            val _type = type.text.toString()
+            val _title = et_title.text.toString()
+            val _original_title = et_original_title.text.toString()
+            val _release_date = et_release_date.text.toString().toInt()
+            val _author = et_author.text.toString()
+            val _completion_date = completion_date.text.toString()
+
+            val newItem =
+                Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
+            ref.child(auth.currentUser.uid).child(_id).setValue(newItem)
+        }
+
+        save_button.setOnClickListener {
+            updateItem()
+            item.isLongClicked = false
+            notifyItemChanged(position)
+        }
+
+        cancel_button.setOnClickListener {
+            item.isLongClicked = false
+            notifyItemChanged(position)
+        }
+
+        delete_button.setOnClickListener {
+            MaterialAlertDialogBuilder(context)
+                .setTitle(context.getString(R.string.title))
+                .setMessage(context.getString(R.string.supporting_text))
+                .setNeutralButton(context.getString(R.string.cancel)) { _, _ -> }
+                .setPositiveButton(context.getString(R.string.accept)) { _, _ ->
+                    ref.child(auth.currentUser.uid).child(item.id).removeValue()
+                    item.isLongClicked = false
+                    notifyItemChanged(position)
+                }
+                .show()
+        }
+
+        // method to show popup menu
+        fun showPopupMenu(v: View) {
+            val popup = PopupMenu(context, v)
+
+            popup.apply {
+                // inflate the popup menu
+                menuInflater.inflate(R.menu.popup_menu, popup.menu)
+                // popup menu item click listener
+                setOnMenuItemClickListener {
+                    icon.setImageDrawable(it.icon)
+                    type.text = it.title
+                    false
+                }
+            }
+            // show icons on popup menu
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                popup.setForceShowIcon(true)
+            } else {
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if ("mPopup" == field.name) {
+                            field.isAccessible = true
+                            val menuPopupHelper = field[popup]
+                            val classPopupHelper =
+                                Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceIcons: Method = classPopupHelper.getMethod(
+                                "setForceShowIcon",
+                                Boolean::class.javaPrimitiveType
+                            )
+                            setForceIcons.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            popup.show()
+        }
+
+        change_type_button.setOnClickListener {
+            showPopupMenu(it)
         }
     }
 }
