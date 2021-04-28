@@ -16,9 +16,10 @@
     <string name="game">Game</string>
 
     <string name="type">Type</string>
+    <string name="title">Title</string>
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
-    <string name="author">Author</string>
+    <string name="author">Author/Director/Studio</string>
     <string name="completion_date">Completion date</string>
 
     <string name="add">Add</string>

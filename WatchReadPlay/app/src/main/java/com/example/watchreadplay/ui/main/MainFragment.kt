@@ -1,11 +1,13 @@
 package com.example.watchreadplay.ui.main
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -19,13 +21,16 @@ import com.afollestad.materialdialogs.customview.customView
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.dialog_view.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import java.lang.reflect.Method
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -72,10 +77,6 @@ class MainFragment : Fragment() {
             setupAdapter(temp)
         }
 
-        fun showPopupMenu(v: View) {
-
-        }
-
         add_button.setOnClickListener {
             showAddDialog()
         }
@@ -114,21 +115,6 @@ class MainFragment : Fragment() {
     private fun signOut() {
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-    }
-
-    private fun addData() {
-        val input = Data(
-            "${Date().time}",
-            "Serie",
-            "The Falcon and the Winter Soldier",
-            "The Falcon and the Winter Soldier",
-            2021,
-            "Marvel Cinematic Universe",
-            "-",
-            false
-        )
-
-        ref.child(auth.currentUser.uid).child(input.id).setValue(input)
     }
 
     private fun setupAdapter(list: ArrayList<Data>) {
@@ -176,6 +162,12 @@ class MainFragment : Fragment() {
 
         val icon = dialog.findViewById<AppCompatImageView>(R.id.icon_dialog)
         val type = dialog.findViewById<MaterialTextView>(R.id.type_dialog)
+        val title = dialog.findViewById<TextInputEditText>(R.id.title_dialog)
+        val original_title = dialog.findViewById<TextInputEditText>(R.id.title_original_dialog)
+        val author = dialog.findViewById<TextInputEditText>(R.id.author_dialog)
+        val release_date = dialog.findViewById<TextInputEditText>(R.id.release_date_dialog)
+        val completion_date = dialog.findViewById<MaterialTextView>(R.id.completion_date_dialog)
+        val add_button = dialog.findViewById<Button>(R.id.add_button_dialog)
 
         // Select type
         dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
@@ -217,6 +209,45 @@ class MainFragment : Fragment() {
                 }
             }
             popup.show()
+        }
+
+        // Set finish date
+        dialog.findViewById<MaterialButton>(R.id.date_picker_button_dialog).setOnClickListener {
+            @SuppressLint("SimpleDateFormat")
+            fun convertLongToTime(time: Long): String {
+                val date = Date(time)
+                val format = SimpleDateFormat("dd/MM/yyyy")
+                return format.format(date)
+            }
+
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+            datePicker.show(requireActivity().supportFragmentManager, "TAG")
+
+            datePicker.addOnPositiveButtonClickListener {
+                completion_date.text = convertLongToTime(it)
+            }
+        }
+
+        // Add data
+        add_button.setOnClickListener {
+            var compDate = completion_date.text.toString()
+            if (compDate.isNullOrEmpty()) compDate = "-"
+
+            val input = Data(
+                "${Date().time}",
+                type.text.toString(),
+                title.text.toString(),
+                original_title.text.toString(),
+                release_date.text.toString(),
+                author.text.toString(),
+                compDate
+            )
+
+            ref.child(auth.currentUser.uid).child(input.id).setValue(input)
         }
 
         dialog.show()

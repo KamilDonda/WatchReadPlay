@@ -145,7 +145,7 @@ class DataAdapter(
             val _type = type.text.toString()
             val _title = et_title.text.toString()
             val _original_title = et_original_title.text.toString()
-            val _release_date = et_release_date.text.toString().toInt()
+            val _release_date = et_release_date.text.toString()
             val _author = et_author.text.toString()
             val _completion_date = completion_date.text.toString()
 
