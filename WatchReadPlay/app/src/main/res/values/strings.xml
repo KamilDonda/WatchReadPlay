@@ -15,6 +15,7 @@
     <string name="book">Book</string>
     <string name="game">Game</string>
 
+    <string name="type">Type</string>
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
     <string name="author">Author</string>

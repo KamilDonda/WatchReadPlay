@@ -1,22 +1,31 @@
 package com.example.watchreadplay.ui.main
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.dialog_view.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -63,8 +72,12 @@ class MainFragment : Fragment() {
             setupAdapter(temp)
         }
 
+        fun showPopupMenu(v: View) {
+
+        }
+
         add_button.setOnClickListener {
-//            addData()
+            showAddDialog()
         }
 
         logout_button.setOnClickListener {
@@ -154,5 +167,56 @@ class MainFragment : Fragment() {
             "Game" -> getDrawable(requireContext(), R.drawable.ic_game)
             else -> null
         }
+    }
+
+    private fun showAddDialog() {
+        val dialog = MaterialDialog(requireContext())
+            .customView(R.layout.dialog_view)
+            .noAutoDismiss()
+
+        dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
+            val icon = dialog.findViewById<AppCompatImageView>(R.id.icon_dialog)
+            val type = dialog.findViewById<MaterialTextView>(R.id.type_dialog)
+
+            val popup = PopupMenu(context, icon)
+
+            popup.apply {
+                // inflate the popup menu
+                menuInflater.inflate(R.menu.popup_menu, popup.menu)
+                // popup menu item click listener
+                setOnMenuItemClickListener {
+                    icon.setImageDrawable(it.icon)
+                    type.text = it.title
+                    false
+                }
+            }
+            // show icons on popup menu
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                popup.setForceShowIcon(true)
+            } else {
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if ("mPopup" == field.name) {
+                            field.isAccessible = true
+                            val menuPopupHelper = field[popup]
+                            val classPopupHelper =
+                                Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceIcons: Method = classPopupHelper.getMethod(
+                                "setForceShowIcon",
+                                Boolean::class.javaPrimitiveType
+                            )
+                            setForceIcons.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            popup.show()
+        }
+
+        dialog.show()
     }
 }
