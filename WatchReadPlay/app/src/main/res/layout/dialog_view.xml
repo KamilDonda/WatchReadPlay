@@ -24,8 +24,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/icon_dialog"
-                android:layout_width="@dimen/image_size"
-                android:layout_height="@dimen/image_size"
+                android:layout_width="@dimen/add_image_size"
+                android:layout_height="@dimen/add_image_size"
+                android:src="@drawable/ic_movie"
+                app:layout_constraintBottom_toBottomOf="@+id/type_dialog"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +35,9 @@
                 android:id="@+id/type_dialog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="10dp"
+                android:text="@string/movie"
+                android:textSize="@dimen/add_text_size"
                 app:layout_constraintStart_toEndOf="@+id/icon_dialog"
                 app:layout_constraintTop_toTopOf="parent" />
 

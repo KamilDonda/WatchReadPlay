@@ -174,9 +174,11 @@ class MainFragment : Fragment() {
             .customView(R.layout.dialog_view)
             .noAutoDismiss()
 
+        val icon = dialog.findViewById<AppCompatImageView>(R.id.icon_dialog)
+        val type = dialog.findViewById<MaterialTextView>(R.id.type_dialog)
+
+        // Select type
         dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
-            val icon = dialog.findViewById<AppCompatImageView>(R.id.icon_dialog)
-            val type = dialog.findViewById<MaterialTextView>(R.id.type_dialog)
 
             val popup = PopupMenu(context, icon)
 
