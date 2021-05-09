@@ -25,6 +25,8 @@ import com.example.watchreadplay.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
@@ -162,6 +164,7 @@ class MainFragment : Fragment() {
         val release_date = dialog.findViewById<TextInputEditText>(R.id.release_date_dialog)
         val completion_date = dialog.findViewById<MaterialTextView>(R.id.completion_date_dialog)
         val add_button = dialog.findViewById<Button>(R.id.add_button_dialog)
+        val bottom_margin = dialog.findViewById<View>(R.id.bottom_margin_dialog)
 
         // When user is typing sth in the 'original title' field and the 'title' field is empty
         // then in the 'title' field the content of the 'original title' field appears
@@ -245,18 +248,29 @@ class MainFragment : Fragment() {
             var compDate = completion_date.text.toString()
             if (compDate.isNullOrEmpty()) compDate = "-"
 
-            val input = Data(
-                "${Date().time}",
-                type.text.toString(),
-                title.text.toString(),
-                original_title.text.toString(),
-                release_date.text.toString(),
-                author.text.toString(),
-                compDate
-            )
+            if (title.text.isNullOrEmpty()) {
+                bottom_margin.visibility = View.VISIBLE
+                Snackbar.make(it, getString(R.string.title_is_empty), Snackbar.LENGTH_SHORT)
+                    .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            bottom_margin.visibility = View.GONE
+                        }
+                    }).show()
+            } else {
+                val input = Data(
+                    "${Date().time}",
+                    type.text.toString(),
+                    title.text.toString(),
+                    original_title.text.toString(),
+                    release_date.text.toString(),
+                    author.text.toString(),
+                    compDate
+                )
 
-            ref.child(auth.currentUser.uid).child(input.id).setValue(input)
-            dialog.dismiss()
+                ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+                dialog.dismiss()
+            }
         }
 
         dialog.show()
