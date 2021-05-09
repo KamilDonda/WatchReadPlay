@@ -55,26 +55,12 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        radio_group_top.setOnCheckedChangeListener { _, checkedId ->
-            val rb = view.findViewById(checkedId) as RadioButton
-
-            val temp = ArrayList<Data>()
-            list.forEach {
-                if (rb.text == "All" || checkType(it.type!!, rb.text.toString()))
-                    temp.add(it)
-            }
-            setupAdapter(temp)
+        radio_group_top.setOnCheckedChangeListener { _, _ ->
+            setupAdapter()
         }
 
-        radio_group_bottom.setOnCheckedChangeListener { _, checkedId ->
-            val rb = view.findViewById(checkedId) as RadioButton
-
-            val temp = ArrayList<Data>()
-            list.forEach {
-                if (rb.text == "All" || checkStatus(it, rb.text.toString()))
-                    temp.add(it)
-            }
-            setupAdapter(temp)
+        radio_group_bottom.setOnCheckedChangeListener { _, _ ->
+            setupAdapter()
         }
 
         add_button.setOnClickListener {
@@ -107,7 +93,7 @@ class MainFragment : Fragment() {
                     newRow?.icon = setIcon(newRow?.type)
                     list.add(newRow!!)
                 }
-                preSetupAdapter(list)
+                setupAdapter()
             }
         })
     }
@@ -117,17 +103,23 @@ class MainFragment : Fragment() {
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
     }
 
-    private fun setupAdapter(list: ArrayList<Data>) {
-        recycler_view.adapter = DataAdapter(list, ref, auth, requireContext())
-    }
+    private fun setupAdapter() {
+        val checkedId_type: Int = radio_group_top.checkedRadioButtonId
+        val checkedType = view?.findViewById(checkedId_type) as RadioButton
+        val type = checkedType.text.toString()
 
-    private fun preSetupAdapter(list: ArrayList<Data>) {
+        val checkedId_status: Int = radio_group_bottom.checkedRadioButtonId
+        val checkedStatus = view?.findViewById(checkedId_status) as RadioButton
+        val status = checkedStatus.text.toString()
+
         val temp = ArrayList<Data>()
         list.forEach {
-            if (checkStatus(it, getString(R.string.finished)))
-                temp.add(it)
+            if (type == getString(R.string.all) || checkType(it.type!!, type))
+                if (checkStatus(it, status))
+                    temp.add(it)
         }
-        setupAdapter(temp)
+
+        recycler_view.adapter = DataAdapter(temp, ref, auth, requireContext())
     }
 
     private fun checkType(type: String, text_radio: String): Boolean {
@@ -142,7 +134,8 @@ class MainFragment : Fragment() {
 
     private fun checkStatus(item: Data, text_radio: String): Boolean {
         return (item.completion_date != "-" && text_radio == getString(R.string.finished) ||
-                item.completion_date == "-" && text_radio == getString(R.string.wishlist))
+                item.completion_date == "-" && text_radio == getString(R.string.wishlist) ||
+                text_radio == getString(R.string.all))
     }
 
     private fun setIcon(type: String?): Drawable? {
