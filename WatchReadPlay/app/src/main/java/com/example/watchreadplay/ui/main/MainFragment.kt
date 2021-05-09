@@ -1,12 +1,14 @@
 package com.example.watchreadplay.ui.main
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.RadioButton
@@ -151,6 +153,11 @@ class MainFragment : Fragment() {
         }
     }
 
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
     private fun showAddDialog() {
         val dialog = MaterialDialog(requireContext())
             .customView(R.layout.dialog_view)
@@ -249,6 +256,7 @@ class MainFragment : Fragment() {
             if (compDate.isNullOrEmpty()) compDate = "-"
 
             if (title.text.isNullOrEmpty()) {
+                it.hideKeyboard()
                 bottom_margin.visibility = View.VISIBLE
                 Snackbar.make(it, getString(R.string.title_is_empty), Snackbar.LENGTH_SHORT)
                     .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
