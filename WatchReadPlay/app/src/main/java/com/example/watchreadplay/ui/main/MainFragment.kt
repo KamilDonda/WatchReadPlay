@@ -13,6 +13,7 @@ import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -161,6 +162,20 @@ class MainFragment : Fragment() {
         val release_date = dialog.findViewById<TextInputEditText>(R.id.release_date_dialog)
         val completion_date = dialog.findViewById<MaterialTextView>(R.id.completion_date_dialog)
         val add_button = dialog.findViewById<Button>(R.id.add_button_dialog)
+
+        // When user is typing sth in the 'original title' field and the 'title' field is empty
+        // then in the 'title' field the content of the 'original title' field appears
+        var isTitleEmpty = true
+        title.doOnTextChanged { _, _, _, _ ->
+            if (title.isFocused)
+                isTitleEmpty = false
+            if (title.text.isNullOrEmpty())
+                isTitleEmpty = true
+        }
+        original_title.doOnTextChanged { text, _, _, _ ->
+            if (isTitleEmpty)
+                title.setText(text)
+        }
 
         // Select type
         dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
