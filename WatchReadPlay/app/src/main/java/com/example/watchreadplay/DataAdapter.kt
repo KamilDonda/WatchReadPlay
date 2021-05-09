@@ -1,25 +1,15 @@
 package com.example.watchreadplay
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Context
-import android.graphics.drawable.InsetDrawable
 import android.os.Build
-import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.MenuRes
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -30,7 +20,6 @@ import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.coroutines.coroutineContext
 
 class DataAdapter(
     private val list: ArrayList<Data>,
@@ -156,7 +145,7 @@ class DataAdapter(
             val _type = type.text.toString()
             val _title = et_title.text.toString()
             val _original_title = et_original_title.text.toString()
-            val _release_date = et_release_date.text.toString().toInt()
+            val _release_date = et_release_date.text.toString()
             val _author = et_author.text.toString()
             val _completion_date = completion_date.text.toString()
 
@@ -192,8 +181,8 @@ class DataAdapter(
 
         delete_button.setOnClickListener {
             MaterialAlertDialogBuilder(context)
-                .setTitle(context.getString(R.string.title))
-                .setMessage(context.getString(R.string.supporting_text))
+                .setTitle(context.getString(R.string.title_delete))
+                .setMessage(context.getString(R.string.supporting_text_delete))
                 .setNeutralButton(context.getString(R.string.cancel)) { _, _ -> }
                 .setPositiveButton(context.getString(R.string.accept)) { _, _ ->
                     ref.child(auth.currentUser.uid).child(item.id).removeValue()

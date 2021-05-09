@@ -1,21 +1,36 @@
 package com.example.watchreadplay.ui.main
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.lang.reflect.Method
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -63,8 +78,18 @@ class MainFragment : Fragment() {
         }
 
         add_button.setOnClickListener {
-            signOut()
-//            addData()
+            showAddDialog()
+        }
+
+        logout_button.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(requireContext().getString(R.string.title_logout))
+                .setMessage(requireContext().getString(R.string.supporting_text_logout))
+                .setNeutralButton(requireContext().getString(R.string.cancel)) { _, _ -> }
+                .setPositiveButton(requireContext().getString(R.string.accept)) { _, _ ->
+                    signOut()
+                }
+                .show()
         }
 
         recycler_view.layoutManager = LinearLayoutManager(context)
@@ -90,21 +115,6 @@ class MainFragment : Fragment() {
     private fun signOut() {
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-    }
-
-    private fun addData() {
-        val input = Data(
-            "${Date().time}",
-            "Serie",
-            "The Falcon and the Winter Soldier",
-            "The Falcon and the Winter Soldier",
-            2021,
-            "Marvel Cinematic Universe",
-            "-",
-            false
-        )
-
-        ref.child(auth.currentUser.uid).child(input.id).setValue(input)
     }
 
     private fun setupAdapter(list: ArrayList<Data>) {
@@ -143,5 +153,103 @@ class MainFragment : Fragment() {
             "Game" -> getDrawable(requireContext(), R.drawable.ic_game)
             else -> null
         }
+    }
+
+    private fun showAddDialog() {
+        val dialog = MaterialDialog(requireContext())
+            .customView(R.layout.dialog_view)
+            .noAutoDismiss()
+
+        val icon = dialog.findViewById<AppCompatImageView>(R.id.icon_dialog)
+        val type = dialog.findViewById<MaterialTextView>(R.id.type_dialog)
+        val title = dialog.findViewById<TextInputEditText>(R.id.title_dialog)
+        val original_title = dialog.findViewById<TextInputEditText>(R.id.title_original_dialog)
+        val author = dialog.findViewById<TextInputEditText>(R.id.author_dialog)
+        val release_date = dialog.findViewById<TextInputEditText>(R.id.release_date_dialog)
+        val completion_date = dialog.findViewById<MaterialTextView>(R.id.completion_date_dialog)
+        val add_button = dialog.findViewById<Button>(R.id.add_button_dialog)
+
+        // Select type
+        dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
+
+            val popup = PopupMenu(context, icon)
+
+            popup.apply {
+                // inflate the popup menu
+                menuInflater.inflate(R.menu.popup_menu, popup.menu)
+                // popup menu item click listener
+                setOnMenuItemClickListener {
+                    icon.setImageDrawable(it.icon)
+                    type.text = it.title
+                    false
+                }
+            }
+            // show icons on popup menu
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                popup.setForceShowIcon(true)
+            } else {
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if ("mPopup" == field.name) {
+                            field.isAccessible = true
+                            val menuPopupHelper = field[popup]
+                            val classPopupHelper =
+                                Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceIcons: Method = classPopupHelper.getMethod(
+                                "setForceShowIcon",
+                                Boolean::class.javaPrimitiveType
+                            )
+                            setForceIcons.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            popup.show()
+        }
+
+        // Set finish date
+        dialog.findViewById<MaterialButton>(R.id.date_picker_button_dialog).setOnClickListener {
+            @SuppressLint("SimpleDateFormat")
+            fun convertLongToTime(time: Long): String {
+                val date = Date(time)
+                val format = SimpleDateFormat("dd/MM/yyyy")
+                return format.format(date)
+            }
+
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+            datePicker.show(requireActivity().supportFragmentManager, "TAG")
+
+            datePicker.addOnPositiveButtonClickListener {
+                completion_date.text = convertLongToTime(it)
+            }
+        }
+
+        // Add data
+        add_button.setOnClickListener {
+            var compDate = completion_date.text.toString()
+            if (compDate.isNullOrEmpty()) compDate = "-"
+
+            val input = Data(
+                "${Date().time}",
+                type.text.toString(),
+                title.text.toString(),
+                original_title.text.toString(),
+                release_date.text.toString(),
+                author.text.toString(),
+                compDate
+            )
+
+            ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+        }
+
+        dialog.show()
     }
 }

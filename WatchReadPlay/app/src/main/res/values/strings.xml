@@ -3,6 +3,7 @@
     <string name="finished">Finished</string>
     <string name="wishlist">Wishlist</string>
     <string name="all">All</string>
+    <string name="logout">Logout</string>
 
     <string name="movies">Movies</string>
     <string name="series">Series</string>
@@ -14,9 +15,11 @@
     <string name="book">Book</string>
     <string name="game">Game</string>
 
+    <string name="type">Type</string>
+    <string name="title">Title</string>
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
-    <string name="author">Author</string>
+    <string name="author">Author/Director/Studio</string>
     <string name="completion_date">Completion date</string>
 
     <string name="add">Add</string>
@@ -26,7 +29,9 @@
     <string name="delete">Delete</string>
     <string name="change_type">Change type</string>
 
-    <string name="title">Delete this item?</string>
+    <string name="title_delete">Delete this item?</string>
+    <string name="title_logout">Logging out</string>
     <string name="accept">Accept</string>
-    <string name="supporting_text">Are you sure you want to remove this item? Item once deleted cannot be restored!</string>
+    <string name="supporting_text_delete">Are you sure you want to remove this item? Item once deleted cannot be restored!</string>
+    <string name="supporting_text_logout">Are you sure you want to logout?</string>
 </resources>
