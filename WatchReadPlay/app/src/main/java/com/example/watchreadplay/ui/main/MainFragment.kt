@@ -241,6 +241,7 @@ class MainFragment : Fragment() {
             )
 
             ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+            dialog.dismiss()
         }
 
         dialog.show()
