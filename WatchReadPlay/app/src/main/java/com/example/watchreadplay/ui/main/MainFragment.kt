@@ -1,18 +1,21 @@
 package com.example.watchreadplay.ui.main
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.RadioButton
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +27,8 @@ import com.example.watchreadplay.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
@@ -55,26 +60,12 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        radio_group_top.setOnCheckedChangeListener { _, checkedId ->
-            val rb = view.findViewById(checkedId) as RadioButton
-
-            val temp = ArrayList<Data>()
-            list.forEach {
-                if (rb.text == "All" || checkType(it.type!!, rb.text.toString()))
-                    temp.add(it)
-            }
-            setupAdapter(temp)
+        radio_group_top.setOnCheckedChangeListener { _, _ ->
+            setupAdapter()
         }
 
-        radio_group_bottom.setOnCheckedChangeListener { _, checkedId ->
-            val rb = view.findViewById(checkedId) as RadioButton
-
-            val temp = ArrayList<Data>()
-            list.forEach {
-                if (rb.text == "All" || checkStatus(it, rb.text.toString()))
-                    temp.add(it)
-            }
-            setupAdapter(temp)
+        radio_group_bottom.setOnCheckedChangeListener { _, _ ->
+            setupAdapter()
         }
 
         add_button.setOnClickListener {
@@ -107,7 +98,7 @@ class MainFragment : Fragment() {
                     newRow?.icon = setIcon(newRow?.type)
                     list.add(newRow!!)
                 }
-                preSetupAdapter(list)
+                setupAdapter()
             }
         })
     }
@@ -117,17 +108,23 @@ class MainFragment : Fragment() {
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
     }
 
-    private fun setupAdapter(list: ArrayList<Data>) {
-        recycler_view.adapter = DataAdapter(list, ref, auth, requireContext())
-    }
+    private fun setupAdapter() {
+        val checkedId_type: Int = radio_group_top.checkedRadioButtonId
+        val checkedType = view?.findViewById(checkedId_type) as RadioButton
+        val type = checkedType.text.toString()
 
-    private fun preSetupAdapter(list: ArrayList<Data>) {
+        val checkedId_status: Int = radio_group_bottom.checkedRadioButtonId
+        val checkedStatus = view?.findViewById(checkedId_status) as RadioButton
+        val status = checkedStatus.text.toString()
+
         val temp = ArrayList<Data>()
         list.forEach {
-            if (checkStatus(it, getString(R.string.finished)))
-                temp.add(it)
+            if (type == getString(R.string.all) || checkType(it.type!!, type))
+                if (checkStatus(it, status))
+                    temp.add(it)
         }
-        setupAdapter(temp)
+
+        recycler_view.adapter = DataAdapter(temp, ref, auth, requireContext())
     }
 
     private fun checkType(type: String, text_radio: String): Boolean {
@@ -142,7 +139,8 @@ class MainFragment : Fragment() {
 
     private fun checkStatus(item: Data, text_radio: String): Boolean {
         return (item.completion_date != "-" && text_radio == getString(R.string.finished) ||
-                item.completion_date == "-" && text_radio == getString(R.string.wishlist))
+                item.completion_date == "-" && text_radio == getString(R.string.wishlist) ||
+                text_radio == getString(R.string.all))
     }
 
     private fun setIcon(type: String?): Drawable? {
@@ -153,6 +151,11 @@ class MainFragment : Fragment() {
             "Game" -> getDrawable(requireContext(), R.drawable.ic_game)
             else -> null
         }
+    }
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
     private fun showAddDialog() {
@@ -168,6 +171,21 @@ class MainFragment : Fragment() {
         val release_date = dialog.findViewById<TextInputEditText>(R.id.release_date_dialog)
         val completion_date = dialog.findViewById<MaterialTextView>(R.id.completion_date_dialog)
         val add_button = dialog.findViewById<Button>(R.id.add_button_dialog)
+        val bottom_margin = dialog.findViewById<View>(R.id.bottom_margin_dialog)
+
+        // When user is typing sth in the 'original title' field and the 'title' field is empty
+        // then in the 'title' field the content of the 'original title' field appears
+        var isTitleEmpty = true
+        title.doOnTextChanged { _, _, _, _ ->
+            if (title.isFocused)
+                isTitleEmpty = false
+            if (title.text.isNullOrEmpty())
+                isTitleEmpty = true
+        }
+        original_title.doOnTextChanged { text, _, _, _ ->
+            if (isTitleEmpty)
+                title.setText(text)
+        }
 
         // Select type
         dialog.findViewById<AppCompatImageButton>(R.id.type_button_dialog).setOnClickListener {
@@ -237,17 +255,30 @@ class MainFragment : Fragment() {
             var compDate = completion_date.text.toString()
             if (compDate.isNullOrEmpty()) compDate = "-"
 
-            val input = Data(
-                "${Date().time}",
-                type.text.toString(),
-                title.text.toString(),
-                original_title.text.toString(),
-                release_date.text.toString(),
-                author.text.toString(),
-                compDate
-            )
+            if (title.text.isNullOrEmpty()) {
+                it.hideKeyboard()
+                bottom_margin.visibility = View.VISIBLE
+                Snackbar.make(it, getString(R.string.title_is_empty), Snackbar.LENGTH_SHORT)
+                    .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            bottom_margin.visibility = View.GONE
+                        }
+                    }).show()
+            } else {
+                val input = Data(
+                    "${Date().time}",
+                    type.text.toString(),
+                    title.text.toString(),
+                    original_title.text.toString(),
+                    release_date.text.toString(),
+                    author.text.toString(),
+                    compDate
+                )
 
-            ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+                ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+                dialog.dismiss()
+            }
         }
 
         dialog.show()

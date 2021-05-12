@@ -110,9 +110,10 @@ class DataAdapter(
         }
 
         root.setOnLongClickListener {
-            if (item.isClicked) {
-                item.isLongClicked = !item.isLongClicked
-                notifyItemChanged(position)
+            item.isLongClicked = !item.isLongClicked
+            notifyItemChanged(position)
+            if (!item.isClicked) {
+                item.isClicked = true
             }
             true
         }

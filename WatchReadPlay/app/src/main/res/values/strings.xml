@@ -17,6 +17,7 @@
 
     <string name="type">Type</string>
     <string name="title">Title</string>
+    <string name="title_req">Title*</string>
     <string name="original_title">Original title</string>
     <string name="release_date">Release date</string>
     <string name="author">Author/Director/Studio</string>
@@ -34,4 +35,5 @@
     <string name="accept">Accept</string>
     <string name="supporting_text_delete">Are you sure you want to remove this item? Item once deleted cannot be restored!</string>
     <string name="supporting_text_logout">Are you sure you want to logout?</string>
+    <string name="title_is_empty">You cannot add untitled item!</string>
 </resources>
