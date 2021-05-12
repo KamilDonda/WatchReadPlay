@@ -1,4 +1,4 @@
-package com.example.watchreadplay.ui.main
+package com.example.watchreadplay.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.example.watchreadplay.ui.login
+package com.example.watchreadplay.fragments
 
 import android.content.Intent
 import android.os.Bundle

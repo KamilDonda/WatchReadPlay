@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.watchreadplay.ui.login.LoginFragment"
+        android:name="com.example.watchreadplay.fragments.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.watchreadplay.ui.main.MainFragment"
+        android:name="com.example.watchreadplay.fragments.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment" >
         <action
