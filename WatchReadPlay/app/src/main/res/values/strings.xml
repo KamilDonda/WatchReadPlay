@@ -5,6 +5,9 @@
     <string name="all">All</string>
     <string name="logout">Logout</string>
 
+    <string name="email">E-mail</string>
+    <string name="password">Password</string>
+
     <string name="movies">Movies</string>
     <string name="series">Series</string>
     <string name="books">Books</string>
