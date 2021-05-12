@@ -7,6 +7,9 @@
 
     <string name="email">E-mail</string>
     <string name="password">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="login">Login</string>
+    <string name="not_account">Don\'t have an account?</string>
 
     <string name="movies">Movies</string>
     <string name="series">Series</string>

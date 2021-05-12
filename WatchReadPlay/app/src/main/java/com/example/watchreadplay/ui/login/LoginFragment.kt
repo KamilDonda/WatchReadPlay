@@ -100,7 +100,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sign_in_button.setOnClickListener {
+        sign_in_button_with_google.setOnClickListener {
             signIn()
         }
     }
