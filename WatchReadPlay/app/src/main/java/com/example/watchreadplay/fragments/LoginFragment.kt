@@ -103,5 +103,9 @@ class LoginFragment : Fragment() {
         sign_in_button_with_google.setOnClickListener {
             signIn()
         }
+
+        sign_up_button.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
     }
 }

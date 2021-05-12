@@ -13,6 +13,4 @@ class MainActivity : AppCompatActivity() {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         }
     }
-
-    override fun onBackPressed() {}
-}
+    }
