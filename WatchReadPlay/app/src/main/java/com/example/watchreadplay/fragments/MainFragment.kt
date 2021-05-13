@@ -12,13 +12,14 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.example.watchreadplay.Data
@@ -45,11 +46,17 @@ class MainFragment : Fragment() {
     private lateinit var ref: DatabaseReference
     private lateinit var list: ArrayList<Data>
 
+    private lateinit var currentContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        currentContext = context
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         val firebase = FirebaseDatabase.getInstance(getString(R.string.firebase_database_url))
         ref = firebase.getReference("ArrayData")
         auth = FirebaseAuth.getInstance()
@@ -61,11 +68,11 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         radio_group_top.setOnCheckedChangeListener { _, _ ->
-            setupAdapter()
+            setupAdapter(view)
         }
 
         radio_group_bottom.setOnCheckedChangeListener { _, _ ->
-            setupAdapter()
+            setupAdapter(view)
         }
 
         add_button.setOnClickListener {
@@ -83,8 +90,6 @@ class MainFragment : Fragment() {
                 .show()
         }
 
-        recycler_view.layoutManager = LinearLayoutManager(context)
-
         ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
 
@@ -99,7 +104,7 @@ class MainFragment : Fragment() {
                         newRow?.icon = setIcon(newRow?.type)
                         list.add(newRow!!)
                     }
-                    setupAdapter()
+                    setupAdapter(view)
                 }
             }
         })
@@ -108,54 +113,58 @@ class MainFragment : Fragment() {
     private fun signOut() {
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+        requireActivity().recreate()
     }
 
-    private fun setupAdapter() {
-        val checkedId_type: Int = radio_group_top.checkedRadioButtonId
-        val checkedType = view?.findViewById(checkedId_type) as RadioButton
+    private fun setupAdapter(view: View) {
+        val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
+        val checkedId_type: Int = radioGroup_top.checkedRadioButtonId
+        val checkedType = view.findViewById(checkedId_type) as RadioButton
         val type = checkedType.text.toString()
 
-        val checkedId_status: Int = radio_group_bottom.checkedRadioButtonId
-        val checkedStatus = view?.findViewById(checkedId_status) as RadioButton
+        val radioGroup_bottom = view.findViewById<RadioGroup>(R.id.radio_group_bottom)
+        val checkedId_status: Int = radioGroup_bottom.checkedRadioButtonId
+        val checkedStatus = view.findViewById(checkedId_status) as RadioButton
         val status = checkedStatus.text.toString()
 
         val temp = ArrayList<Data>()
         list.forEach {
-            if (type == getString(R.string.all) || checkType(it.type!!, type))
+            if (type == get_string(R.string.all) || checkType(it.type!!, type))
                 if (checkStatus(it, status))
                     temp.add(it)
         }
 
-        recycler_view.adapter = DataAdapter(temp, ref, auth, requireContext())
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.adapter = DataAdapter(temp, ref, auth, currentContext)
     }
 
     private fun checkType(type: String, text_radio: String): Boolean {
         return when (text_radio) {
-            getString(R.string.movies) -> "Movie"
-            getString(R.string.series) -> "Serie"
-            getString(R.string.books) -> "Book"
-            getString(R.string.games) -> "Game"
+            get_string(R.string.movies) -> "Movie"
+            get_string(R.string.series) -> "Serie"
+            get_string(R.string.books) -> "Book"
+            get_string(R.string.games) -> "Game"
             else -> ""
         } == type
     }
 
     private fun checkStatus(item: Data, text_radio: String): Boolean {
-        return (item.completion_date != "-" && text_radio == getString(R.string.finished) ||
-                item.completion_date == "-" && text_radio == getString(R.string.wishlist) ||
-                text_radio == getString(R.string.all))
+        return (item.completion_date != "-" && text_radio == get_string(R.string.finished) ||
+                item.completion_date == "-" && text_radio == get_string(R.string.wishlist) ||
+                text_radio == get_string(R.string.all))
     }
 
     private fun setIcon(type: String?): Drawable? {
         return when (type) {
-            "Movie" -> getDrawable(requireContext(), R.drawable.ic_movie)
-            "Serie" -> getDrawable(requireContext(), R.drawable.ic_serie)
-            "Book" -> getDrawable(requireContext(), R.drawable.ic_book)
-            "Game" -> getDrawable(requireContext(), R.drawable.ic_game)
+            "Movie" -> get_drawable(R.drawable.ic_movie)
+            "Serie" -> get_drawable(R.drawable.ic_serie)
+            "Book" -> get_drawable(R.drawable.ic_book)
+            "Game" -> get_drawable(R.drawable.ic_game)
             else -> null
         }
     }
 
-    fun View.hideKeyboard() {
+    private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
@@ -255,7 +264,7 @@ class MainFragment : Fragment() {
         // Add data
         add_button.setOnClickListener {
             var compDate = completion_date.text.toString()
-            if (compDate.isNullOrEmpty()) compDate = "-"
+            if (compDate.isEmpty()) compDate = "-"
 
             if (title.text.isNullOrEmpty()) {
                 it.hideKeyboard()
@@ -284,5 +293,13 @@ class MainFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun get_string(id: Int): String {
+        return currentContext.getString(id)
+    }
+
+    private fun get_drawable(id: Int): Drawable? {
+        return getDrawable(currentContext, id)
     }
 }

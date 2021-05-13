@@ -1,7 +1,7 @@
 package com.example.watchreadplay
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
@@ -13,4 +13,4 @@ class MainActivity : AppCompatActivity() {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         }
     }
-    }
+}
