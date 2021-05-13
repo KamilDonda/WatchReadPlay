@@ -39,22 +39,29 @@ class RegisterFragment : Fragment() {
             val password = password.text.toString()
             val repeated_password = repeatPassword.text.toString()
 
-            if (password.isNullOrEmpty()) {
+            if (email.isEmpty()) {
                 Snackbar.make(
                     it,
-                    getString(R.string.empty_password),
+                    getString(R.string.empty_email),
                     Snackbar.LENGTH_SHORT
                 ).show()
             } else
-                if (password == repeated_password) {
-                    createAccount(email, password)
-                } else {
+                if (password.isEmpty()) {
                     Snackbar.make(
                         it,
-                        getString(R.string.different_passwords),
+                        getString(R.string.empty_password),
                         Snackbar.LENGTH_SHORT
                     ).show()
-                }
+                } else
+                    if (password == repeated_password) {
+                        createAccount(email, password)
+                    } else {
+                        Snackbar.make(
+                            it,
+                            getString(R.string.different_passwords),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
         }
     }
 
