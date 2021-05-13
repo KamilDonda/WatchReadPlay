@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.watchreadplay.R
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -64,7 +66,12 @@ class RegisterFragment : Fragment() {
                         requireView(),
                         getString(R.string.account_created),
                         Snackbar.LENGTH_LONG
-                    ).show()
+                    ).addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                        }
+                    }).show()
                 } else {
                     Snackbar.make(
                         requireView(),

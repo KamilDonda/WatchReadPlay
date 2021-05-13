@@ -91,14 +91,16 @@ class MainFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 list = ArrayList()
 
-                val user = auth.currentUser!!.uid
+                val user = auth.currentUser?.uid
 
-                for (row in snapshot.child(user).children) {
-                    val newRow = row.getValue(Data::class.java)
-                    newRow?.icon = setIcon(newRow?.type)
-                    list.add(newRow!!)
+                if (user != null) {
+                    for (row in snapshot.child(user).children) {
+                        val newRow = row.getValue(Data::class.java)
+                        newRow?.icon = setIcon(newRow?.type)
+                        list.add(newRow!!)
+                    }
+                    setupAdapter()
                 }
-                setupAdapter()
             }
         })
     }
