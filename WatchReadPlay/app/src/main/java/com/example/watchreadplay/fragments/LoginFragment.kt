@@ -1,4 +1,4 @@
-package com.example.watchreadplay.ui.login
+package com.example.watchreadplay.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -84,6 +85,21 @@ class LoginFragment : Fragment() {
         )
     }
 
+    private fun signIn(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    goToMain(auth.currentUser)
+                } else {
+                    Snackbar.make(
+                        requireView(),
+                        task.exception?.message.toString(),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+
     private fun goToMain(user: FirebaseUser?) {
         if (user != null) {
             findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
@@ -100,8 +116,34 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sign_in_button.setOnClickListener {
+        sign_in_button_with_google.setOnClickListener {
             signIn()
+        }
+
+        sign_in_button.setOnClickListener {
+            val email = email.text.toString()
+            val password = password.text.toString()
+
+            if (email.isEmpty()) {
+                Snackbar.make(
+                    it,
+                    getString(R.string.empty_email),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            } else
+                if (password.isEmpty()) {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.empty_password),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                } else {
+                    signIn(email, password)
+                }
+        }
+
+        sign_up_button.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
 }
