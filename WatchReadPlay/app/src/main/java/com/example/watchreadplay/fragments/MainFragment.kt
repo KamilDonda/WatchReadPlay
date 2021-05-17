@@ -16,6 +16,7 @@ import android.widget.RadioGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -126,6 +127,9 @@ class MainFragment : Fragment() {
         val checkedId_status: Int = radioGroup_bottom.checkedRadioButtonId
         val checkedStatus = view.findViewById(checkedId_status) as RadioButton
         val status = checkedStatus.text.toString()
+
+        if (list.isNotEmpty())
+            view.findViewById<ConstraintLayout>(R.id.message).visibility = View.GONE
 
         val temp = ArrayList<Data>()
         list.forEach {
