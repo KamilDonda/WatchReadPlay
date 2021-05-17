@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +17,14 @@ import android.widget.RadioGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
+import com.example.watchreadplay.Config
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
@@ -48,6 +51,8 @@ class MainFragment : Fragment() {
 
     private lateinit var currentContext: Context
 
+    private var config = Config()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         currentContext = context
@@ -67,12 +72,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        radio_group_top.setOnCheckedChangeListener { _, _ ->
+        radio_group_top.setOnCheckedChangeListener { radioGroup: RadioGroup, _ ->
             setupAdapter(view)
+            setRadio(radioGroup, true)
         }
 
-        radio_group_bottom.setOnCheckedChangeListener { _, _ ->
+        radio_group_bottom.setOnCheckedChangeListener { radioGroup: RadioGroup, _ ->
             setupAdapter(view)
+            setRadio(radioGroup, false)
         }
 
         add_button.setOnClickListener {
@@ -99,7 +106,17 @@ class MainFragment : Fragment() {
                 val user = auth.currentUser?.uid
 
                 if (user != null) {
-                    for (row in snapshot.child(user).children) {
+                    val record = snapshot.child(user)
+
+                    val c = record.child("config").getValue(Config::class.java) ?: Config()
+                    config.apply {
+                        top = c.top
+                        bottom = c.bottom
+                    }
+                    selectRadios(view)
+
+                    val items = record.child("items").children
+                    for (row in items) {
                         val newRow = row.getValue(Data::class.java)
                         newRow?.icon = setIcon(newRow?.type)
                         list.add(newRow!!)
@@ -111,9 +128,29 @@ class MainFragment : Fragment() {
     }
 
     private fun signOut() {
+        ref.child(auth.currentUser.uid).child("config").setValue(config)
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
         requireActivity().recreate()
+    }
+
+    private fun selectRadios(view: View) {
+        val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
+        val top = config.top
+        (radioGroup_top.getChildAt(top) as RadioButton).isChecked = true
+
+        val radioGroup_bottom = view.findViewById<RadioGroup>(R.id.radio_group_bottom)
+        val bottom = config.bottom
+        (radioGroup_bottom.getChildAt(bottom) as RadioButton).isChecked = true
+    }
+
+    private fun setRadio(radioGroup: RadioGroup, top: Boolean) {
+        val id = radioGroup.checkedRadioButtonId
+        val rb = radioGroup.findViewById<RadioButton>(id)
+        val index = radioGroup.indexOfChild(rb)
+
+        if (top) config.top = index
+        else config.bottom = index
     }
 
     private fun setupAdapter(view: View) {
@@ -126,6 +163,9 @@ class MainFragment : Fragment() {
         val checkedId_status: Int = radioGroup_bottom.checkedRadioButtonId
         val checkedStatus = view.findViewById(checkedId_status) as RadioButton
         val status = checkedStatus.text.toString()
+
+        if (list.isNotEmpty())
+            view.findViewById<ConstraintLayout>(R.id.message).visibility = View.GONE
 
         val temp = ArrayList<Data>()
         list.forEach {
@@ -287,7 +327,7 @@ class MainFragment : Fragment() {
                     compDate
                 )
 
-                ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+                ref.child(auth.currentUser.uid).child("items").child(input.id).setValue(input)
                 dialog.dismiss()
             }
         }
@@ -301,5 +341,11 @@ class MainFragment : Fragment() {
 
     private fun get_drawable(id: Int): Drawable? {
         return getDrawable(currentContext, id)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (auth.currentUser != null)
+            ref.child(auth.currentUser.uid).child("config").setValue(config)
     }
 }
