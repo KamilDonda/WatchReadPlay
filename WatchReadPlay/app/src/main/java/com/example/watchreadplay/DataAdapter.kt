@@ -84,7 +84,7 @@ class DataAdapter(
         type.text = item.type
         title.text = item.title
         original_title.text = item.original_title
-        release_date.text = item.release_date.toString()
+        release_date.text = item.release_year.toString()
         author.text = item.author
         completion_date.text = item.completion_date
         checkbox.isChecked = (item.completion_date != "-")

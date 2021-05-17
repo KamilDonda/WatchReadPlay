@@ -23,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
+import com.example.watchreadplay.Config
 import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
@@ -100,7 +101,13 @@ class MainFragment : Fragment() {
                 val user = auth.currentUser?.uid
 
                 if (user != null) {
-                    for (row in snapshot.child(user).children) {
+                    val record = snapshot.child(user)
+
+                    val config = record.child("config").getValue(Config::class.java) ?: Config()
+                    selectRadios(view, config)
+
+                    val items = record.child("items").children
+                    for (row in items) {
                         val newRow = row.getValue(Data::class.java)
                         newRow?.icon = setIcon(newRow?.type)
                         list.add(newRow!!)
@@ -115,6 +122,16 @@ class MainFragment : Fragment() {
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
         requireActivity().recreate()
+    }
+
+    private fun selectRadios(view: View, config: Config) {
+        val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
+        val top = config.top
+        (radioGroup_top.getChildAt(top) as RadioButton).isChecked = true
+
+        val radioGroup_bottom = view.findViewById<RadioGroup>(R.id.radio_group_bottom)
+        val bottom = config.bottom
+        (radioGroup_bottom.getChildAt(bottom) as RadioButton).isChecked = true
     }
 
     private fun setupAdapter(view: View) {

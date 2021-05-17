@@ -8,7 +8,7 @@ data class Data(
     val type: String? = "",
     val title: String = "",
     val original_title: String = "",
-    val release_date: String = "",
+    val release_year: String = "",
     val author: String = "",
     var completion_date: String = "-",
     @Exclude @set:Exclude @get:Exclude var isClicked: Boolean = false,
