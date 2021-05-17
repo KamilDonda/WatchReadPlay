@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,8 @@ class MainFragment : Fragment() {
 
     private lateinit var currentContext: Context
 
+    private var config = Config()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         currentContext = context
@@ -69,12 +72,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        radio_group_top.setOnCheckedChangeListener { _, _ ->
+        radio_group_top.setOnCheckedChangeListener { radioGroup: RadioGroup, _ ->
             setupAdapter(view)
+            setRadio(radioGroup, true)
         }
 
-        radio_group_bottom.setOnCheckedChangeListener { _, _ ->
+        radio_group_bottom.setOnCheckedChangeListener { radioGroup: RadioGroup, _ ->
             setupAdapter(view)
+            setRadio(radioGroup, false)
         }
 
         add_button.setOnClickListener {
@@ -103,8 +108,12 @@ class MainFragment : Fragment() {
                 if (user != null) {
                     val record = snapshot.child(user)
 
-                    val config = record.child("config").getValue(Config::class.java) ?: Config()
-                    selectRadios(view, config)
+                    val c = record.child("config").getValue(Config::class.java) ?: Config()
+                    config.apply {
+                        top = c.top
+                        bottom = c.bottom
+                    }
+                    selectRadios(view)
 
                     val items = record.child("items").children
                     for (row in items) {
@@ -124,7 +133,7 @@ class MainFragment : Fragment() {
         requireActivity().recreate()
     }
 
-    private fun selectRadios(view: View, config: Config) {
+    private fun selectRadios(view: View) {
         val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
         val top = config.top
         (radioGroup_top.getChildAt(top) as RadioButton).isChecked = true
@@ -132,6 +141,15 @@ class MainFragment : Fragment() {
         val radioGroup_bottom = view.findViewById<RadioGroup>(R.id.radio_group_bottom)
         val bottom = config.bottom
         (radioGroup_bottom.getChildAt(bottom) as RadioButton).isChecked = true
+    }
+
+    private fun setRadio(radioGroup: RadioGroup, top: Boolean) {
+        val id = radioGroup.checkedRadioButtonId
+        val rb = radioGroup.findViewById<RadioButton>(id)
+        val index =  radioGroup.indexOfChild(rb)
+
+        if (top) config.top = index
+        else config.bottom = index
     }
 
     private fun setupAdapter(view: View) {
@@ -308,7 +326,7 @@ class MainFragment : Fragment() {
                     compDate
                 )
 
-                ref.child(auth.currentUser.uid).child(input.id).setValue(input)
+                ref.child(auth.currentUser.uid).child("items").child(input.id).setValue(input)
                 dialog.dismiss()
             }
         }
@@ -322,5 +340,10 @@ class MainFragment : Fragment() {
 
     private fun get_drawable(id: Int): Drawable? {
         return getDrawable(currentContext, id)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ref.child(auth.currentUser.uid).child("config").setValue(config)
     }
 }

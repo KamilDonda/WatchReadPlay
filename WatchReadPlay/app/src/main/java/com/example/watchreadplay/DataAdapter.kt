@@ -152,7 +152,7 @@ class DataAdapter(
 
             val newItem =
                 Data(_id, _type, _title, _original_title, _release_date, _author, _completion_date)
-            ref.child(auth.currentUser.uid).child(_id).setValue(newItem)
+            ref.child(auth.currentUser.uid).child("items").child(_id).setValue(newItem)
         }
 
         fun updateItem(bool: Boolean) {
@@ -162,7 +162,7 @@ class DataAdapter(
 
             completion_date.text = date
             val newItem = item.copy(completion_date = date)
-            ref.child(auth.currentUser.uid).child(newItem.id).setValue(newItem)
+            ref.child(auth.currentUser.uid).child("items").child(newItem.id).setValue(newItem)
         }
 
         checkbox.setOnClickListener {
@@ -186,7 +186,7 @@ class DataAdapter(
                 .setMessage(context.getString(R.string.supporting_text_delete))
                 .setNeutralButton(context.getString(R.string.cancel)) { _, _ -> }
                 .setPositiveButton(context.getString(R.string.accept)) { _, _ ->
-                    ref.child(auth.currentUser.uid).child(item.id).removeValue()
+                    ref.child(auth.currentUser.uid).child("items").child(item.id).removeValue()
                     item.isLongClicked = false
                     notifyItemChanged(position)
                 }
