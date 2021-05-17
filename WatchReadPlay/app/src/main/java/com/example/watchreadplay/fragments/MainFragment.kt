@@ -128,6 +128,7 @@ class MainFragment : Fragment() {
     }
 
     private fun signOut() {
+        ref.child(auth.currentUser.uid).child("config").setValue(config)
         auth.signOut()
         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
         requireActivity().recreate()
@@ -146,7 +147,7 @@ class MainFragment : Fragment() {
     private fun setRadio(radioGroup: RadioGroup, top: Boolean) {
         val id = radioGroup.checkedRadioButtonId
         val rb = radioGroup.findViewById<RadioButton>(id)
-        val index =  radioGroup.indexOfChild(rb)
+        val index = radioGroup.indexOfChild(rb)
 
         if (top) config.top = index
         else config.bottom = index
@@ -344,6 +345,7 @@ class MainFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        ref.child(auth.currentUser.uid).child("config").setValue(config)
+        if (auth.currentUser != null)
+            ref.child(auth.currentUser.uid).child("config").setValue(config)
     }
 }
