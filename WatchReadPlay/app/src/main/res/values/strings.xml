@@ -5,6 +5,7 @@
     <string name="all">All</string>
     <string name="logout">Logout</string>
     <string name="search">Search</string>
+    <string name="reset">Reset</string>
     <string name="message">Nothing here :(\nClick the button\nto add new item!</string>
 
     <string name="email">E-mail</string>

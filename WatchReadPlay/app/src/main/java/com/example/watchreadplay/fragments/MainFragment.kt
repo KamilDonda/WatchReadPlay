@@ -106,6 +106,10 @@ class MainFragment : Fragment() {
             showSearchDialog(view)
         }
 
+        reset_button.setOnClickListener {
+            setupAdapter(view)
+        }
+
         ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
 
@@ -352,9 +356,14 @@ class MainFragment : Fragment() {
         val search_field = dialog.findViewById<TextInputEditText>(R.id.search_field_dialog)
         val chipGroup = dialog.findViewById<ChipGroup>(R.id.chipGroup_dialog)
         val search_button = dialog.findViewById<MaterialButton>(R.id.search_button_dialog)
+        val reset_button = dialog.findViewById<MaterialButton>(R.id.reset_button_dialog)
         val bottom_margin = dialog.findViewById<View>(R.id.bottom_margin_dialog_search)
 
         val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
+
+        reset_button.setOnClickListener {
+            setupAdapter(view)
+        }
 
         search_button.setOnClickListener {
             // Select radio button from top group
