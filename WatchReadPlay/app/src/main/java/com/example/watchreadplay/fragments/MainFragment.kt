@@ -18,6 +18,8 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
+import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -29,6 +31,8 @@ import com.example.watchreadplay.Data
 import com.example.watchreadplay.DataAdapter
 import com.example.watchreadplay.R
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -37,6 +41,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.dialog_search.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import java.lang.reflect.Method
 import java.text.SimpleDateFormat
@@ -97,6 +102,14 @@ class MainFragment : Fragment() {
                 .show()
         }
 
+        search_button.setOnClickListener {
+            showSearchDialog(view)
+        }
+
+        reset_button.setOnClickListener {
+            setupAdapter(view)
+        }
+
         ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
 
@@ -153,7 +166,7 @@ class MainFragment : Fragment() {
         else config.bottom = index
     }
 
-    private fun setupAdapter(view: View) {
+    private fun setupAdapter(view: View, items: ArrayList<Data> = list) {
         val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
         val checkedId_type: Int = radioGroup_top.checkedRadioButtonId
         val checkedType = view.findViewById(checkedId_type) as RadioButton
@@ -164,11 +177,11 @@ class MainFragment : Fragment() {
         val checkedStatus = view.findViewById(checkedId_status) as RadioButton
         val status = checkedStatus.text.toString()
 
-        if (list.isNotEmpty())
+        if (items.isNotEmpty())
             view.findViewById<ConstraintLayout>(R.id.message).visibility = View.GONE
 
         val temp = ArrayList<Data>()
-        list.forEach {
+        items.forEach {
             if (type == get_string(R.string.all) || checkType(it.type!!, type))
                 if (checkStatus(it, status))
                     temp.add(it)
@@ -329,6 +342,73 @@ class MainFragment : Fragment() {
 
                 ref.child(auth.currentUser.uid).child("items").child(input.id).setValue(input)
                 dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showSearchDialog(view: View) {
+        val dialog = MaterialDialog(requireContext())
+            .customView(R.layout.dialog_search)
+            .noAutoDismiss()
+
+        val search_field = dialog.findViewById<TextInputEditText>(R.id.search_field_dialog)
+        val chipGroup = dialog.findViewById<ChipGroup>(R.id.chipGroup_dialog)
+        val search_button = dialog.findViewById<MaterialButton>(R.id.search_button_dialog)
+        val reset_button = dialog.findViewById<MaterialButton>(R.id.reset_button_dialog)
+        val bottom_margin = dialog.findViewById<View>(R.id.bottom_margin_dialog_search)
+
+        val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
+
+        val radio = radioGroup_top.children
+            .toList()
+            .first { (it as RadioButton).isChecked} as RadioButton
+
+        val chip = chipGroup.children
+            .toList()
+            .first { (it as Chip).text == radio.text }
+
+        chipGroup.check(chip.id)
+
+        reset_button.setOnClickListener {
+            setupAdapter(view)
+        }
+
+        search_button.setOnClickListener {
+            // Select radio button from top group
+            val chip = chipGroup.children
+                .toList()
+                .first { (it as Chip).isChecked } as Chip
+
+            val radio = radioGroup_top.children
+                .toList()
+                .first { (it as RadioButton).text == chip.text }
+
+            radioGroup_top.check(radio.id)
+
+            if (!search_field.text.isNullOrBlank()) {
+                val title = search_field.text.toString().toLowerCase()
+                val temp = ArrayList<Data>()
+                list.forEach {
+                    if (it.title.toLowerCase(Locale.ROOT)
+                            .contains(title) || it.original_title.toLowerCase(
+                            Locale.ROOT
+                        ).contains(title)
+                    )
+                        temp.add(it)
+                }
+                dialog.dismiss()
+                setupAdapter(view, temp)
+            } else {
+                bottom_margin.visibility = View.VISIBLE
+                Snackbar.make(it, getString(R.string.title_is_empty_search), Snackbar.LENGTH_SHORT)
+                    .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            bottom_margin.visibility = View.GONE
+                        }
+                    }).show()
             }
         }
 
