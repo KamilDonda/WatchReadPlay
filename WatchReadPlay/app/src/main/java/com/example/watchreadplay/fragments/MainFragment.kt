@@ -361,6 +361,16 @@ class MainFragment : Fragment() {
 
         val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
 
+        val radio = radioGroup_top.children
+            .toList()
+            .first { (it as RadioButton).isChecked} as RadioButton
+
+        val chip = chipGroup.children
+            .toList()
+            .first { (it as Chip).text == radio.text }
+
+        chipGroup.check(chip.id)
+
         reset_button.setOnClickListener {
             setupAdapter(view)
         }
