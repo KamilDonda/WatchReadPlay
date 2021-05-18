@@ -28,7 +28,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/search_field_dialog"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:hint="@string/search"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,6 +87,12 @@
             android:text="@string/search"
             android:textColor="@color/button_color"
             android:layout_gravity="end"/>
+
+        <View
+            android:id="@+id/bottom_margin_dialog_search"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/bottom_margin"/>
 
     </LinearLayout>
 
