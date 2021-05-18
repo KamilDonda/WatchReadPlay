@@ -97,6 +97,10 @@ class MainFragment : Fragment() {
                 .show()
         }
 
+        search_button.setOnClickListener {
+            showSearchDialog()
+        }
+
         ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
 
@@ -331,6 +335,14 @@ class MainFragment : Fragment() {
                 dialog.dismiss()
             }
         }
+
+        dialog.show()
+    }
+
+    private fun showSearchDialog() {
+        val dialog = MaterialDialog(requireContext())
+            .customView(R.layout.dialog_search)
+            .noAutoDismiss()
 
         dialog.show()
     }
