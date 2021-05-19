@@ -52,7 +52,7 @@ class MainFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
-    private lateinit var list: ArrayList<Data>
+    private var list: ArrayList<Data> = ArrayList()
 
     private lateinit var currentContext: Context
 
@@ -76,6 +76,33 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = auth.currentUser?.uid
+
+                if (user != null) {
+                    val record = snapshot.child(user)
+
+                    val c = record.child("config").getValue(Config::class.java) ?: Config()
+                    config.apply {
+                        top = c.top
+                        bottom = c.bottom
+                    }
+                    selectRadios(view)
+
+                    val items = record.child("items").children
+                    for (row in items) {
+                        val newRow = row.getValue(Data::class.java)
+                        newRow?.icon = setIcon(newRow?.type)
+                        list.add(newRow!!)
+                    }
+                    setupAdapter(view)
+                }
+            }
+        })
 
         radio_group_top.setOnCheckedChangeListener { radioGroup: RadioGroup, _ ->
             setupAdapter(view)
@@ -109,35 +136,6 @@ class MainFragment : Fragment() {
         reset_button.setOnClickListener {
             setupAdapter(view)
         }
-
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {}
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                list = ArrayList()
-
-                val user = auth.currentUser?.uid
-
-                if (user != null) {
-                    val record = snapshot.child(user)
-
-                    val c = record.child("config").getValue(Config::class.java) ?: Config()
-                    config.apply {
-                        top = c.top
-                        bottom = c.bottom
-                    }
-                    selectRadios(view)
-
-                    val items = record.child("items").children
-                    for (row in items) {
-                        val newRow = row.getValue(Data::class.java)
-                        newRow?.icon = setIcon(newRow?.type)
-                        list.add(newRow!!)
-                    }
-                    setupAdapter(view)
-                }
-            }
-        })
     }
 
     private fun signOut() {
@@ -168,12 +166,12 @@ class MainFragment : Fragment() {
 
     private fun setupAdapter(view: View, items: ArrayList<Data> = list) {
         val radioGroup_top = view.findViewById<RadioGroup>(R.id.radio_group_top)
-        val checkedId_type: Int = radioGroup_top.checkedRadioButtonId
+        val checkedId_type = radioGroup_top.checkedRadioButtonId
         val checkedType = view.findViewById(checkedId_type) as RadioButton
         val type = checkedType.text.toString()
 
         val radioGroup_bottom = view.findViewById<RadioGroup>(R.id.radio_group_bottom)
-        val checkedId_status: Int = radioGroup_bottom.checkedRadioButtonId
+        val checkedId_status = radioGroup_bottom.checkedRadioButtonId
         val checkedStatus = view.findViewById(checkedId_status) as RadioButton
         val status = checkedStatus.text.toString()
 
