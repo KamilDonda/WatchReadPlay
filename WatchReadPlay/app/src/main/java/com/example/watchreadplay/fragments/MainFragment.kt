@@ -93,6 +93,7 @@ class MainFragment : Fragment() {
                     }
                     selectRadios(view)
 
+                    list.clear()
                     val items = record.child("items").children
                     for (row in items) {
                         val newRow = row.getValue(Data::class.java)
